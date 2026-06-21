@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LeBonComparatif</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f3f6fb;
+      color: #111827;
+    }
+
+    header {
+      background: linear-gradient(135deg, #0f172a, #2563eb);
+      color: white;
+      padding: 55px 20px 90px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 44px;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      font-size: 18px;
+      opacity: 0.9;
+    }
+
+    .search-box {
+      max-width: 950px;
+      margin: -45px auto 30px;
+      background: white;
+      padding: 24px;
+      border-radius: 22px;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+      display: flex;
+      gap: 12px;
+    }
+
+    input {
+      flex: 1;
+      padding: 16px;
+      border-radius: 14px;
+      border: 1px solid #d1d5db;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 15px 22px;
+      border: none;
+      border-radius: 14px;
+      background: #2563eb;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1e40af;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .section {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+
+    .section h2 {
+      color: #2563eb;
+      margin-bottom: 15px;
+    }
+
+    #aiBox, #compareBox {
+      display: none;
+    }
+
+    .history button {
+      background: #eef2ff;
+      color: #1e40af;
+      margin: 5px;
+      padding: 9px 13px;
+      font-size: 14px;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 22px;
+      padding: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      border: 1px solid #e5e7eb;
+      position: relative;
+    }
+
+    .badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #dcfce7;
+      color: #166534;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .site {
+      color: #2563eb;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    .image {
+      height: 140px;
+      background: #eef2ff;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 55px;
+      margin-bottom: 15px;
+    }
+
+    .price {
+      font-size: 27px;
+      font-weight: bold;
+      color: #16a34a;
+      margin: 10px 0;
+    }
+
+    .rating {
+      color: #f59e0b;
+      margin-bottom: 10px;
+    }
+
+    .score {
+      background: #eff6ff;
+      color: #1d4ed8;
+      display: inline-block;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    .details {
+      color: #4b5563;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    .affiliate {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      background: #111827;
+      color: white;
+      padding: 13px;
+      border-radius: 14px;
+      font-weight: bold;
+      margin-top: 12px;
+    }
+
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 14px;
+    }
+
+    .compare-table th,
+    .compare-table td {
+      padding: 14px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+
+    .compare-table th {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      color: #2563eb;
+      font-weight: bold;
+    }
+
+    @media (max-width: 700px) {
+      .search-box {
+        flex-direction: column;
+        margin: -45px 15px 25px;
+      }
+
+      header h1 {
+        font-size: 34px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>LeBonComparatif</h1>
+  <p>Comparez les meilleurs produits avec l'aide de l'IA</p>
+</header>
+
+<div class="search-box">
+  <input id="searchInput" type="text" placeholder="Exemple : iPhone 15 Pro Max, batterie Clio 4, aspirateur robot..." />
+  <button onclick="searchProducts()">Comparer</button>
+</div>
+
+<div class="container">
+
+  <div class="section history">
+    <h2>Historique des recherches</h2>
+    <div id="historyList">Aucune recherche pour le moment.</div>
+  </div>
+
+  <div class="loading" id="loading">
+    Recherche IA en cours...
+  </div>
+
+  <div class="section" id="aiBox">
+    <h2>Analyse IA</h2>
+    <div id="aiText"></div>
+  </div>
+
+  <div class="section" id="compareBox">
+    <h2>Comparaison côte à côte</h2>
+    <div id="compareTable"></div>
+  </div>
+
+  <div class="products" id="products"></div>
+
+</div>
+
+<script>
+  let history = [];
+  let currentProducts = [];
+
+  async function searchProducts() {
+    const query = document.getElementById("searchInput").value.trim();
+
+    if (!query) {
+      alert("Entre un produit à comparer.");
+      return;
+    }
+
+    addToHistory(query);
+
+    document.getElementById("loading").style.display = "block";
+    document.getElementById("aiBox").style.display = "none";
+    document.getElementById("compareBox").style.display = "none";
+    document.getElementById("products").innerHTML = "";
+
+    currentProducts = generateFakeProducts(query);
+
+    try {
+      const response = await fetch("/api/recherche", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ produit: query })
+      });
+
+      const data = await response.json();
+
+      if (data.resultat) {
+        document.getElementById("aiText").innerHTML = data.resultat;
+      } else {
+        document.getElementById("aiText").innerHTML = generateLocalAnalysis(query);
+      }
+
+    } catch (error) {
+      document.getElementById("aiText").innerHTML = generateLocalAnalysis(query);
+    }
+
+    displayProducts(currentProducts);
+    displayComparison(currentProducts);
+
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("aiBox").style.display = "block";
+    document.getElementById("compareBox").style.display = "block";
+  }
+
+  function generateFakeProducts(query) {
+    return [
+      {
+        site: "Amazon",
+        icon: "📦",
+        name: query + " - Meilleure vente",
+        price: 899.99,
+        rating: 4.7,
+        score: 92,
+        delivery: "Rapide",
+        warranty: "Bonne",
+        badge: "Meilleur choix",
+        details: "Bon équilibre entre prix, avis clients, disponibilité et livraison.",
+        link: "https://www.amazon.fr/s?k=" + encodeURIComponent(query)
+      },
+      {
+        site: "AliExpress",
+        icon: "🛒",
+        name: query + " - Prix bas",
+        price: 749.99,
+        rating: 4.2,
+        score: 78,
+        delivery: "Longue",
+        warranty: "Variable",
+        badge: "Prix bas",
+        details: "Prix attractif, mais délai de livraison et garantie à vérifier.",
+        link: "https://www.aliexpress.com/wholesale?SearchText=" + encodeURIComponent(query)
+      },
+      {
+        site: "Fnac",
+        icon: "⭐",
+        name: query + " - Offre fiable",
+        price: 969.99,
+        rating: 4.8,
+        score: 90,
+        delivery: "Rapide",
+        warranty: "Très bonne",
+        badge: "Fiable",
+        details: "Bon service client, garantie claire et retrait possible en magasin.",
+        link: "https://www.fnac.com/SearchResult/ResultList.aspx?Search=" + encodeURIComponent(query)
+      },
+      {
+        site: "Cdiscount",
+        icon: "🏷️",
+        name: query + " - Promotion",
+        price: 829.99,
+        rating: 4.3,
+        score: 84,
+        delivery: "Moyenne",
+        warranty: "Correcte",
+        badge: "Promo",
+        details: "Souvent intéressant en période de promotion.",
+        link: "https://www.cdiscount.com/search/10/" + encodeURIComponent(query) + ".html"
+      },
+      {
+        site: "Rakuten",
+        icon: "🔁",
+        name: query + " - Reconditionné",
+        price: 699.99,
+        rating: 4.1,
+        score: 81,
+        delivery: "Moyenne",
+        warranty: "À vérifier",
+        badge: "Occasion",
+        details: "Bon choix pour payer moins cher en occasion ou reconditionné.",
+        link: "https://fr.shopping.rakuten.com/search/" + encodeURIComponent(query)
+      }
+    ];
+  }
+
+  function generateLocalAnalysis(query) {
+    const best = currentProducts.sort((a, b) => b.score - a.score)[0];
+    const cheapest = currentProducts.sort((a, b) => a.price - b.price)[0];
+
+    return `
+      <p>Pour <strong>${query}</strong>, le meilleur choix global semble être
+      <strong>${best.name}</strong> sur <strong>${best.site}</strong>,
+      avec un score de <strong>${best.score}/100</strong>.</p>
+      <br>
+      <p>Si tu veux le prix le plus bas, regarde plutôt
+      <strong>${cheapest.name}</strong> sur <strong>${cheapest.site}</strong>.</p>
+      <br>
+      <p><em>Les produits affichés sont encore des données de test. Plus tard, ils pourront venir d'Amazon, Awin, AliExpress, AutoDoc ou d'une base de données.</em></p>
+    `;
+  }
+
+  function displayProducts(products) {
+    const container = document.getElementById("products");
+    container.innerHTML = "";
+
+    products.forEach(product => {
+      container.innerHTML += `
+        <div class="card">
+          <div class="badge">${product.badge}</div>
+          <div class="site">${product.site}</div>
+          <div class="image">${product.icon}</div>
+          <h3>${product.name}</h3>
+          <div class="price">${product.price.toFixed(2)} €</div>
+          <div class="rating">⭐ ${product.rating}/5</div>
+          <div class="score">Score IA : ${product.score}/100</div>
+          <div class="details">${product.details}</div>
+          <p>🚚 Livraison : ${product.delivery}</p>
+          <p>🛡️ Garantie : ${product.warranty}</p>
+          <a class="affiliate" href="${product.link}" target="_blank">Voir l'offre</a>
+        </div>
+      `;
+    });
+  }
+
+  function displayComparison(products) {
+    let html = `
+      <table class="compare-table">
+        <tr>
+          <th>Site</th>
+          <th>Prix</th>
+          <th>Note</th>
+          <th>Score IA</th>
+          <th>Livraison</th>
+          <th>Garantie</th>
+        </tr>
+    `;
+
+    products.forEach(product => {
+      html += `
+        <tr>
+          <td>${product.site}</td>
+          <td>${product.price.toFixed(2)} €</td>
+          <td>${product.rating}/5</td>
+          <td>${product.score}/100</td>
+          <td>${product.delivery}</td>
+          <td>${product.warranty}</td>
+        </tr>
+      `;
+    });
+
+    html += `</table>`;
+    document.getElementById("compareTable").innerHTML = html;
+  }
+
+  function addToHistory(query) {
+    if (!history.includes(query)) {
+      history.unshift(query);
+    }
+
+    if (history.length > 8) {
+      history.pop();
+    }
+
+    const historyList = document.getElementById("historyList");
+    historyList.innerHTML = "";
+
+    history.forEach(item => {
+      historyList.innerHTML += `
+        <button onclick="reuseSearch('${item}')">${item}</button>
+      `;
+    });
+  }
+
+  function reuseSearch(query) {
+    document.getElementById("searchInput").value = query;
+    searchProducts();
+  }
+</script>
+
+</body>
+</html>
