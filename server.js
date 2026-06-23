@@ -16,7 +16,11 @@ if (!process.env.OPENAI_API_KEY) {
 const app = express();
 
 // Sécurité HTTP
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false
+  })
+);
 
 // Limitation anti-spam / anti-bot
 const limiter = rateLimit({
