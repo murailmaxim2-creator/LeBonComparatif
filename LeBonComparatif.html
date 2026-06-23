@@ -221,6 +221,19 @@
         font-size: 34px;
       }
     }
+    .footer {
+      margin-top: 40px;
+      padding: 25px 20px;
+      text-align: center;
+      background: #111827;
+      color: #d1d5db;
+      font-size: 14px;
+     line-height: 1.6;
+    }
+
+    .footer strong {
+      color: white;
+    }
   </style>
 </head>
 
@@ -262,8 +275,10 @@
 </div>
 
 <script>
-  let history = [];
+  let history = JSON.parse(localStorage.getItem("searchHistory")) || [];
   let currentProducts = [];
+
+  displayHistory();
 
   async function searchProducts() {
     const query = document.getElementById("searchInput").value.trim();
@@ -324,7 +339,7 @@
         warranty: "Bonne",
         badge: "Meilleur choix",
         details: "Bon équilibre entre prix, avis clients, disponibilité et livraison.",
-        link: "https://www.amazon.fr/s?k=" + encodeURIComponent(query)
+        link: "https://www.amazon.fr/s?k=" + encodeURIComponent(query) + "&tag=leboncompar0d-21"
       },
       {
         site: "AliExpress",
@@ -453,27 +468,39 @@
   function addToHistory(query) {
     if (!history.includes(query)) {
       history.unshift(query);
+   }
+
+   if (history.length > 8) {
+     history.pop();
     }
 
-    if (history.length > 8) {
-      history.pop();
+    localStorage.setItem("searchHistory", JSON.stringify(history));
+    displayHistory();
+  }
+
+  function displayHistory() {
+   const historyList = document.getElementById("historyList");
+   historyList.innerHTML = "";
+
+   if (history.length === 0) {
+     historyList.innerHTML = "Aucune recherche pour le moment.";
+     return;
     }
 
-    const historyList = document.getElementById("historyList");
-    historyList.innerHTML = "";
-
-    history.forEach(item => {
+   history.forEach(item => {
       historyList.innerHTML += `
         <button onclick="reuseSearch('${item}')">${item}</button>
       `;
     });
   }
-
   function reuseSearch(query) {
     document.getElementById("searchInput").value = query;
     searchProducts();
   }
 </script>
-
+  <footer class="footer">
+  <strong>Information affiliation Amazon :</strong><br>
+  En tant que Partenaire Amazon, je réalise un bénéfice sur les achats remplissant les conditions requises.
+</footer>
 </body>
 </html>
