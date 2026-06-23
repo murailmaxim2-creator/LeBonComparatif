@@ -2,10 +2,30 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import OpenAI from "openai";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 
 dotenv.config();
 
+// Vérification de la clé OpenAI
+if (!process.env.OPENAI_API_KEY) {
+  console.error("Erreur : clé OpenAI manquante.");
+  process.exit(1);
+}
+
 const app = express();
+
+// Sécurité HTTP
+app.use(helmet());
+
+// Limitation anti-spam / anti-bot
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50,
+  message: "Trop de requêtes, réessayez plus tard."
+});
+
+app.use(limiter);
 
 app.use(cors());
 app.use(express.json());
@@ -52,7 +72,7 @@ Réponds en HTML.
 });
 
 app.get("/", (req, res) => {
-    res.sendFile(process.cwd() + "/LeBonComparatif.html");
+  res.sendFile(process.cwd() + "/LeBonComparatif.html");
 });
 
 const PORT = process.env.PORT || 3000;
