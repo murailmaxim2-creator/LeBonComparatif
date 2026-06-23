@@ -16,8 +16,17 @@
     body {
       background: #f3f6fb;
       color: #111827;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
+    main {
+     flex: 1;
+     display: flex;
+     flex-direction: column;
+    }
+    
     header {
       background: linear-gradient(135deg, #0f172a, #2563eb);
       color: white;
@@ -69,6 +78,7 @@
     }
 
     .container {
+      flex: 1;
       max-width: 1200px;
       margin: auto;
       padding: 20px;
@@ -222,13 +232,14 @@
       }
     }
     .footer {
-      margin-top: 40px;
+      margin-top: auto;
       padding: 25px 20px;
       text-align: center;
       background: #111827;
       color: #d1d5db;
       font-size: 14px;
-     line-height: 1.6;
+      line-height: 1.6;
+      background: red !important;
     }
 
     .footer strong {
@@ -238,7 +249,7 @@
 </head>
 
 <body>
-
+<main>
 <header>
   <h1>LeBonComparatif</h1>
   <p>Comparez les meilleurs produits avec l'aide de l'IA</p>
@@ -498,6 +509,7 @@
     searchProducts();
   }
 </script>
+</main>
   <footer class="footer">
   <strong>Information affiliation Amazon :</strong><br>
   En tant que Partenaire Amazon, je réalise un bénéfice sur les achats remplissant les conditions requises.
